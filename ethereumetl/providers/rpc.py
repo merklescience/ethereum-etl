@@ -33,10 +33,16 @@ class BatchHTTPProvider(HTTPProvider):
         self.logger.debug("Making request HTTP. URI: %s, Request: %s",
                           self.endpoint_uri, text)
         request_data = text.encode('utf-8')
+        #self.logger.info(request_data)
+        #self.logger.info(self.get_request_kwargs())
+        req_dict = self.get_request_kwargs()
+        req_dict['headers']['X-Auth-Token'] = 'Mwb3juVAfI1g2RmA1JCGdYk-2_BmFrnLOtbomP1oDa4'
+        self.logger.info(req_dict)
         raw_response = make_post_request(
             self.endpoint_uri,
             request_data,
-            **self.get_request_kwargs()
+            **req_dict,
+            auth=('blockdaemon', 'blockdaemon')
         )
         response = self.decode_rpc_response(raw_response)
         self.logger.debug("Getting response HTTP. URI: %s, "

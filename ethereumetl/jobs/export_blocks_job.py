@@ -107,6 +107,7 @@ class ExportBlocksJob(BaseJob):
         self.item_exporter.close()
 
     def get_coin_price(self, timestamp):
+        return 0
         if not self.from_currency_code or self.coin_price_type == CoinPriceType.empty:
             pass
         elif self.coin_price_type == CoinPriceType.hourly:
