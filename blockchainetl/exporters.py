@@ -37,7 +37,7 @@ from json import JSONEncoder
 
 import decimal
 import six
-
+from typing import cast
 
 class BaseItemExporter(object):
 
@@ -210,4 +210,4 @@ def to_unicode(text, encoding=None, errors='strict'):
                         'object, got %s' % type(text).__name__)
     if encoding is None:
         encoding = 'utf-8'
-    return text.decode(encoding, errors)
+    return cast(bytes,text).decode(encoding,errors)
