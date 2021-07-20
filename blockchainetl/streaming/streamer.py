@@ -21,12 +21,13 @@
 # SOFTWARE.
 
 
+from io import TextIOWrapper
 import logging
 import os
 import time
 
 from blockchainetl.streaming.streamer_adapter_stub import StreamerAdapterStub
-from blockchainetl.file_utils import smart_open
+from blockchainetl.file_utils import NoopFile, smart_open
 
 
 class Streamer:
@@ -132,7 +133,6 @@ def init_last_synced_block_file(start_block, last_synced_block_file):
 def read_last_synced_block(file):
     with smart_open(file, 'r') as last_synced_block_file:
         return int(last_synced_block_file.read())
-
 
 def write_to_file(file, content):
     with smart_open(file, 'w') as file_handle:

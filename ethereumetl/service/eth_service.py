@@ -68,6 +68,8 @@ class EthService(object):
 class BlockTimestampGraph(object):
     def __init__(self, web3):
         self._web3 = web3
+        from web3.middleware import geth_poa_middleware
+        self._web3.middleware_stack.inject(geth_poa_middleware, layer=0)
 
     def get_first_point(self):
         # Ignore the genesis block as its timestamp is 0
