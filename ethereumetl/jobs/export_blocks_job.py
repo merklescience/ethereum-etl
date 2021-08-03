@@ -23,18 +23,21 @@
 
 import json
 
+from ethereumetl.bifrost import get_coin_price
 from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
 from blockchainetl.jobs.base_job import BaseJob
 from ethereumetl.json_rpc_requests import generate_get_block_by_number_json_rpc
 from ethereumetl.mappers.block_mapper import EthBlockMapper
 from ethereumetl.mappers.transaction_mapper import EthTransactionMapper
 from ethereumetl.utils import rpc_response_batch_to_results, validate_range
-from ethereumetl.cryptocompare import (
-    get_coin_price,
-    get_hour_id_from_ts,
-    get_day_id_from_ts
-)
+import datetime as dt
+# from ethereumetl.cryptocompare import (
+#     get_coin_price,
+#     get_hour_id_from_ts,
+#     get_day_id_from_ts
+# )
 from ethereumetl.chain import Chain, CoinPriceType
+
 
 # Exports blocks and transactions
 class ExportBlocksJob(BaseJob):
@@ -107,14 +110,11 @@ class ExportBlocksJob(BaseJob):
         self.item_exporter.close()
 
     def get_coin_price(self, timestamp):
-        if not self.from_currency_code or self.coin_price_type == CoinPriceType.empty:
-            pass
-        elif self.coin_price_type == CoinPriceType.hourly:
-            id = get_hour_id_from_ts(timestamp)
-            if id not in self.coin_price:
-                self.coin_price[id] = get_coin_price(from_currency_code=self.from_currency_code, timestamp=timestamp, resource="histohour")
-        elif self.coin_price_type == CoinPriceType.daily:
-            id = get_day_id_from_ts(timestamp)
-            if id not in self.coin_price:
-                self.coin_price[id] = get_coin_price(from_currency_code=self.from_currency_code, timestamp=timestamp, resource="histoday")
-        return self.coin_price[id]
+        # Only supporting daily since we have daily historical only from bifrost
+        if not CoinPriceType.daily:
+            return None
+        block_date = str(dt.datetime.fromtimestamp(timestamp).date())
+        if block_date not in self.coin_price:
+            self.coin_price[block_date] = get_coin_price(from_currency_code=self.from_currency_code,
+                                                         execution_date=block_date)
+        return self.coin_price[block_date]
