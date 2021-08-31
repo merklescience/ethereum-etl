@@ -26,7 +26,7 @@ from datetime import datetime
 from urllib3.util import Retry
 from requests.adapters import HTTPAdapter
 
-BIFRSOT_AUTH = os.getenv("BIFROST_AUTH", "")
+BIFROST_AUTH = os.getenv("BIFROST_AUTH", "")
 
 
 class BifrostRequestException(Exception):
@@ -48,8 +48,8 @@ def _make_request(
     session.mount('http://', adapter)
     retries.BACKOFF_MAX = 600
     params = {
-        "fsyms": from_currency_code,
-        "tsyms": to_currency_code,
+        "from_currencies": from_currency_code,
+        "to_currencies": to_currency_code,
         "access_token": access_token,
         "execution_date": execution_date
     }
@@ -60,7 +60,7 @@ def get_coin_price(
         from_currency_code: str,
         execution_date: datetime.date,
         to_currency_code: str = "USD",
-        access_token: str = BIFRSOT_AUTH,
+        access_token: str = BIFROST_AUTH,
 ):
     """
     Prices are retrieved from bifrost historical daily service. Please note that only historical prices are available
