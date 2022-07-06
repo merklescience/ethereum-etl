@@ -19,6 +19,7 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+import os
 from confluent_kafka import Producer
 from timeout_decorator import timeout_decorator
 
@@ -38,16 +39,14 @@ class KafkaItemExporter:
             format='{"time" : "%(asctime)s", "level" : "%(levelname)s" , "message" : "%(message)s"}',
         )
 
-        #Doppler this
-        pwd = "46RfgGhqkZcgnj9e0XplI3FsL98GZmSWvTOkmVmJPecrceOD72mkSiuFzxl4q4xA"
         conf = {
-            "bootstrap.servers": "pkc-3w22w.us-central1.gcp.confluent.cloud:9092",
+            "bootstrap.servers": os.getenv("CONFLUENT_ENDPOINT"),
             "security.protocol": "SASL_SSL",
             "sasl.mechanisms": "PLAIN",
             "client.id": socket.gethostname(),
             "message.max.bytes": 5242880,
-            "sasl.username": "J7VXXU374KGW672N",
-            "sasl.password": pwd,
+            "sasl.username": os.getenv("CONFLUENT_USERNAME"),
+            "sasl.password": os.getenv("CONFLUENT_PASSWORD")
         }
 
         producer = Producer(conf)
