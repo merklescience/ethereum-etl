@@ -69,4 +69,4 @@ varint==1.0.2
 web3==4.7.2
 websockets==6.0
 yarl==1.7.2
-pyetherchain=0.3.2
+pyetherchain==0.3.2
