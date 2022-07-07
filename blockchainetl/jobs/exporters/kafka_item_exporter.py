@@ -50,6 +50,7 @@ class KafkaItemExporter:
         }
 
         producer = Producer(conf)
+        print(conf)
         self.item_type_to_topic_mapping = item_type_to_topic_mapping
         self.producer = producer
         self.logging = logging.getLogger(__name__)
