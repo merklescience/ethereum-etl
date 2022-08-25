@@ -12,8 +12,9 @@ from ethereumetl.jobs.extract_tokens_job import ExtractTokensJob
 from ethereumetl.streaming.enrich import enrich_transactions, enrich_logs, enrich_token_transfers, enrich_traces, \
     enrich_contracts, enrich_tokens
 from ethereumetl.streaming.eth_item_id_calculator import EthItemIdCalculator
+from ethereumetl.streaming.eth_item_timestamp_calculator import EthItemTimestampCalculator
 from ethereumetl.thread_local_proxy import ThreadLocalProxy
-from web3 import Web3
+from ethereumetl.web3_utils import build_web3
 
 
 class EthStreamerAdapter:
@@ -30,12 +31,14 @@ class EthStreamerAdapter:
         self.max_workers = max_workers
         self.entity_types = entity_types
         self.item_id_calculator = EthItemIdCalculator()
+        self.item_timestamp_calculator = EthItemTimestampCalculator()
 
     def open(self):
         self.item_exporter.open()
 
     def get_current_block_number(self):
-        return int(Web3(self.batch_web3_provider).eth.getBlock("latest").number)
+        w3 = build_web3(self.batch_web3_provider)
+        return int(w3.eth.getBlock("latest").number)
 
     def export_all(self, start_block, end_block):
         # Export blocks and transactions
@@ -85,15 +88,17 @@ class EthStreamerAdapter:
 
         logging.info('Exporting with ' + type(self.item_exporter).__name__)
 
-        all_items = enriched_blocks + \
-            enriched_transactions + \
-            enriched_logs + \
-            enriched_token_transfers + \
-            enriched_traces + \
-            enriched_contracts + \
-            enriched_tokens
+        all_items = \
+            sort_by(enriched_blocks, 'number') + \
+            sort_by(enriched_transactions, ('block_number', 'transaction_index')) + \
+            sort_by(enriched_logs, ('block_number', 'log_index')) + \
+            sort_by(enriched_token_transfers, ('block_number', 'log_index')) + \
+            sort_by(enriched_traces, ('block_number', 'trace_index')) + \
+            sort_by(enriched_contracts, ('block_number',)) + \
+            sort_by(enriched_tokens, ('block_number',))
 
         self.calculate_item_ids(all_items)
+        self.calculate_item_timestamps(all_items)
 
         self.item_exporter.export_items(all_items)
 
@@ -147,7 +152,7 @@ class EthStreamerAdapter:
             start_block=start_block,
             end_block=end_block,
             batch_size=self.batch_size,
-            web3=ThreadLocalProxy(lambda: Web3(self.batch_web3_provider)),
+            web3=ThreadLocalProxy(lambda: build_web3(self.batch_web3_provider)),
             max_workers=self.max_workers,
             item_exporter=exporter
         )
@@ -171,7 +176,7 @@ class EthStreamerAdapter:
         exporter = InMemoryItemExporter(item_types=['token'])
         job = ExtractTokensJob(
             contracts_iterable=contracts,
-            web3=ThreadLocalProxy(lambda: Web3(self.batch_web3_provider)),
+            web3=ThreadLocalProxy(lambda: build_web3(self.batch_web3_provider)),
             max_workers=self.max_workers,
             item_exporter=exporter
         )
@@ -210,5 +215,15 @@ class EthStreamerAdapter:
         for item in items:
             item['item_id'] = self.item_id_calculator.calculate(item)
 
+    def calculate_item_timestamps(self, items):
+        for item in items:
+            item['item_timestamp'] = self.item_timestamp_calculator.calculate(item)
+
     def close(self):
         self.item_exporter.close()
+
+
+def sort_by(arr, fields):
+    if isinstance(fields, tuple):
+        fields = tuple(fields)
+    return sorted(arr, key=lambda item: tuple(item.get(f) for f in fields))
