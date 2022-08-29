@@ -28,7 +28,7 @@ from web3 import IPCProvider, HTTPProvider
 from ethereumetl.providers.ipc import BatchIPCProvider
 from ethereumetl.providers.rpc import BatchHTTPProvider
 
-DEFAULT_TIMEOUT = 60
+DEFAULT_TIMEOUT = 180
 
 
 def get_provider_from_uri(uri_string, timeout=DEFAULT_TIMEOUT, batch=False):
