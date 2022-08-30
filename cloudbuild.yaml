@@ -9,4 +9,4 @@ steps:
     args: ['push', 'gcr.io/$PROJECT_ID/ethereum-etl:${TAG_NAME}']
     waitFor: ['build-image']
 
-timeout: 600sg
+timeout: 600s
