@@ -27,10 +27,11 @@ setup(
         'Programming Language :: Python :: 3.5',
         'Programming Language :: Python :: 3.6',
         'Programming Language :: Python :: 3.7'
+        'Programming Language :: Python :: 3.9'
     ],
     keywords='ethereum',
     # web3.py doesn't work on 3.5.2 and less (https://github.com/ethereum/web3.py/issues/1012)
-    python_requires='>=3.5.3,<3.8.0',
+    python_requires='>=3.5.3,<3.10.0',
     install_requires=[
         'web3==4.7.2',
         'eth-utils==1.3.0',
@@ -38,7 +39,7 @@ setup(
         # TODO: This has to be removed when "ModuleNotFoundError: No module named 'eth_utils.toolz'" is fixed at eth-abi
         'python-dateutil==2.7.0',
         'click==7.0',
-        'ethereum-dasm==0.1.4'
+        'ethereum-dasm'
     ],
     extras_require={
         'streaming': [
