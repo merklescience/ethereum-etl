@@ -40,7 +40,10 @@ from ethereumetl.thread_local_proxy import ThreadLocalProxy
               help='pubsub or kafka, if empty defaults to printing to console')
 @click.option('-t', '--topic-prefix', type=str,
               help='Google PubSub topic path e.g. projects/your-project/topics/ethereum_blockchain. OR'
-                   'Kakfa topic prefix e.g. {chain}.{hot/warm}.{facet}')
+                   'Kakfa topic prefix e.g. {chain}-{facet}-{hot/warm}')
+@click.option('-ts', '--topic-suffix', type=str,
+              help='Google PubSub topic path e.g. projects/your-project/topics/ethereum_blockchain. OR'
+                   'Kakfa topic prefix e.g. {chain}-{facet}-{hot/warm}')
 @click.option('-s', '--start-block', default=None, type=int, help='Start block')
 @click.option('-e', '--entity-types', default=','.join(EntityType.ALL_FOR_INFURA), type=str,
               help='The list of entity types to export.')
@@ -50,7 +53,7 @@ from ethereumetl.thread_local_proxy import ThreadLocalProxy
 @click.option('-w', '--max-workers', default=5, type=int, help='The number of workers')
 @click.option('--log-file', default=None, type=str, help='Log file')
 @click.option('--pid-file', default=None, type=str, help='pid file')
-def stream(last_synced_block_file, lag, provider_uri, output, topic_prefix, start_block, entity_types,
+def stream(last_synced_block_file, lag, provider_uri, output, topic_prefix, topic_suffix, start_block, entity_types,
            period_seconds=10, batch_size=2, block_batch_size=10, max_workers=5, log_file=None, pid_file=None):
     """Streams all data types to console or Google Pub/Sub."""
     configure_logging(log_file)
@@ -67,7 +70,7 @@ def stream(last_synced_block_file, lag, provider_uri, output, topic_prefix, star
 
     streamer_adapter = EthStreamerAdapter(
         batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
-        item_exporter=get_item_exporter(output, topic_prefix),
+        item_exporter=get_item_exporter(output, topic_prefix, topic_suffix),
         batch_size=batch_size,
         max_workers=max_workers,
         entity_types=entity_types
@@ -92,7 +95,7 @@ def parse_entity_types(entity_types):
         if entity_type not in EntityType.ALL_FOR_STREAMING:
             raise click.BadOptionUsage(
                 '--entity-type', '{} is not an available entity type. Supply a comma separated list of types from {}'
-                    .format(entity_type, ','.join(EntityType.ALL_FOR_STREAMING)))
+                .format(entity_type, ','.join(EntityType.ALL_FOR_STREAMING)))
 
     return entity_types
 

@@ -6,17 +6,15 @@ from blockchainetl.jobs.exporters.console_item_exporter import ConsoleItemExport
 from blockchainetl.logging_utils import logging_basic_config
 
 
-def get_item_exporter(output,
-                      topic_prefix
-                      ):
+def get_item_exporter(output, topic_prefix, topic_suffix):
     item_type_to_topic_mapping = {
-        "block": topic_prefix + ".blocks",
-        "transaction": topic_prefix + ".transactions",
-        "log": topic_prefix + ".logs",
-        "token_transfer": topic_prefix + ".token_transfers",
-        "trace": topic_prefix + ".traces",
-        "contract": topic_prefix + ".contracts",
-        "token": topic_prefix + ".tokens",
+        "block": topic_prefix + "-blocks-" + topic_suffix,
+        "transaction": topic_prefix + "-transactions-" + topic_suffix,
+        "log": topic_prefix + "-logs-" + topic_suffix,
+        "token_transfer": topic_prefix + "-token_transfers-" + topic_suffix,
+        "trace": topic_prefix + "-traces-" + topic_suffix,
+        "contract": topic_prefix + "-contracts-" + topic_suffix,
+        "token": topic_prefix + "-tokens-" + topic_suffix,
     }
 
     if output == "gcp":

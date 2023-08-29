@@ -31,7 +31,7 @@ import json
 
 class KafkaItemExporter:
     def __init__(
-        self, item_type_to_topic_mapping, message_attributes=("item_id",)
+            self, item_type_to_topic_mapping, message_attributes=("item_id",)
     ) -> None:
         logging.basicConfig(
             level=logging.INFO,
@@ -40,13 +40,13 @@ class KafkaItemExporter:
         )
 
         conf = {
-            "bootstrap.servers": os.getenv("CONFLUENT_ENDPOINT"),
+            "bootstrap.servers": os.getenv("CONFLUENT_BROKER"),
             "security.protocol": "SASL_SSL",
             "sasl.mechanisms": "PLAIN",
             "client.id": socket.gethostname(),
             "message.max.bytes": 5242880,
-            "sasl.username": os.getenv("BLOCKCHAIN_PRODUCER_KEY"),
-            "sasl.password": os.getenv("BLOCKCHAIN_PRODUCER_SECRET")
+            "sasl.username": os.getenv("KAFKA_PRODUCER_KEY"),
+            "sasl.password": os.getenv("KAFKA_PRODUCER_PASSWORD")
         }
 
         producer = Producer(conf)
@@ -97,13 +97,14 @@ class KafkaItemExporter:
         self.producer.flush()
         pass
 
-    def write_txns(self, key:str, value: str, topic: str):
+    def write_txns(self, key: str, value: str, topic: str):
         def acked(err, msg):
             if err is not None:
                 self.logging.error('%% Message failed delivery: %s\n' % err)
+
         try:
             self.producer.produce(topic, key=key, value=value, callback=acked)
         except BufferError:
             self.logging.error('%% Local producer queue is full (%d messages awaiting delivery): try again\n' %
-                             len(self.producer))
+                               len(self.producer))
         self.producer.poll(0)
