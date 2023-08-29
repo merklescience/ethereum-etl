@@ -38,7 +38,7 @@ setup(
         'eth-abi==1.2.0',
         # TODO: This has to be removed when "ModuleNotFoundError: No module named 'eth_utils.toolz'" is fixed at eth-abi
         'python-dateutil==2.7.0',
-        'click==7.0',
+        'click==8.0',
         'ethereum-dasm'
     ],
     extras_require={

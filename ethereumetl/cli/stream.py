@@ -38,10 +38,10 @@ from ethereumetl.thread_local_proxy import ThreadLocalProxy
                    'file://$HOME/Library/Ethereum/geth.ipc or https://mainnet.infura.io')
 @click.option('-o', '--output', type=str,
               help='pubsub or kafka, if empty defaults to printing to console')
-@click.option('-t', '--topic-prefix', type=str,
+@click.option('-t', '--topic-prefix',default='producer-ethereum', type=str,
               help='Google PubSub topic path e.g. projects/your-project/topics/ethereum_blockchain. OR'
                    'Kakfa topic prefix e.g. {chain}-{facet}-{hot/warm}')
-@click.option('-ts', '--topic-suffix', type=str,
+@click.option('-ts', '--topic-suffix',default='hot', type=str,
               help='Google PubSub topic path e.g. projects/your-project/topics/ethereum_blockchain. OR'
                    'Kakfa topic prefix e.g. {chain}-{facet}-{hot/warm}')
 @click.option('-s', '--start-block', default=None, type=int, help='Start block')
