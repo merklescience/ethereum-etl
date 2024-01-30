@@ -191,4 +191,5 @@ class EthTraceMapper(object):
             'status': trace.status,
             'trace_id': trace.trace_id,
             'token_address': '0x0000',
+            'trace_index': trace.trace_index,
         }

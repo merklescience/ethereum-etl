@@ -19,12 +19,17 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 # SOFTWARE.
+
+from blockchainetl.logging_utils import logging_basic_config
+logging_basic_config()
+
 import click
 
 from ethereumetl.cli.export_all import export_all
 from ethereumetl.cli.export_blocks_and_transactions import export_blocks_and_transactions
 from ethereumetl.cli.export_contracts import export_contracts
 from ethereumetl.cli.export_geth_traces import export_geth_traces
+from ethereumetl.cli.export_origin import export_origin
 from ethereumetl.cli.export_receipts_and_logs import export_receipts_and_logs
 from ethereumetl.cli.export_token_transfers import export_token_transfers
 from ethereumetl.cli.export_tokens import export_tokens
@@ -43,7 +48,7 @@ from ethereumetl.cli.stream import stream
 
 
 @click.group()
-@click.version_option(version='1.3.1')
+@click.version_option(version='2.0.2')
 @click.pass_context
 def cli(ctx):
     pass
@@ -52,6 +57,7 @@ def cli(ctx):
 # export
 cli.add_command(export_all, "export_all")
 cli.add_command(export_blocks_and_transactions, "export_blocks_and_transactions")
+cli.add_command(export_origin, "export_origin")
 cli.add_command(export_receipts_and_logs, "export_receipts_and_logs")
 cli.add_command(export_token_transfers, "export_token_transfers")
 cli.add_command(extract_token_transfers, "extract_token_transfers")
