@@ -46,7 +46,7 @@ class EthStreamerAdapter:
         # Export receipts and logs
         receipts, logs = [], []
         if self._should_export(EntityType.RECEIPT) or self._should_export(EntityType.LOG):
-            receipts, logs = self._export_receipts_and_logs(transactions)
+            receipts, logs = self._export_receipts_and_logs(blocks)
 
         # Extract token transfers
         token_transfers = []
@@ -114,101 +114,3 @@ class EthStreamerAdapter:
         transactions = blocks_and_transactions_item_exporter.get_items('transaction')
         return blocks, transactions
 
-    def _export_receipts_and_logs(self, transactions):
-        exporter = InMemoryItemExporter(item_types=['receipt', 'log'])
-        job = ExportReceiptsJob(
-            transaction_hashes_iterable=(transaction['hash'] for transaction in transactions),
-            batch_size=self.batch_size,
-            batch_web3_provider=self.batch_web3_provider,
-            max_workers=self.max_workers,
-            item_exporter=exporter,
-            export_receipts=self._should_export(EntityType.RECEIPT),
-            export_logs=self._should_export(EntityType.LOG)
-        )
-        job.run()
-        receipts = exporter.get_items('receipt')
-        logs = exporter.get_items('log')
-        return receipts, logs
-
-    def _extract_token_transfers(self, logs):
-        exporter = InMemoryItemExporter(item_types=['token_transfer'])
-        job = ExtractTokenTransfersJob(
-            logs_iterable=logs,
-            batch_size=self.batch_size,
-            max_workers=self.max_workers,
-            item_exporter=exporter)
-        job.run()
-        token_transfers = exporter.get_items('token_transfer')
-        return token_transfers
-
-    def _export_traces(self, start_block, end_block):
-        exporter = InMemoryItemExporter(item_types=['trace'])
-        job = ExportTracesJob(
-            start_block=start_block,
-            end_block=end_block,
-            batch_size=self.batch_size,
-            web3=ThreadLocalProxy(lambda: Web3(self.batch_web3_provider)),
-            max_workers=self.max_workers,
-            item_exporter=exporter
-        )
-        job.run()
-        traces = exporter.get_items('trace')
-        return traces
-
-    def _export_contracts(self, traces):
-        exporter = InMemoryItemExporter(item_types=['contract'])
-        job = ExtractContractsJob(
-            traces_iterable=traces,
-            batch_size=self.batch_size,
-            max_workers=self.max_workers,
-            item_exporter=exporter
-        )
-        job.run()
-        contracts = exporter.get_items('contract')
-        return contracts
-
-    def _extract_tokens(self, contracts):
-        exporter = InMemoryItemExporter(item_types=['token'])
-        job = ExtractTokensJob(
-            contracts_iterable=contracts,
-            web3=ThreadLocalProxy(lambda: Web3(self.batch_web3_provider)),
-            max_workers=self.max_workers,
-            item_exporter=exporter
-        )
-        job.run()
-        tokens = exporter.get_items('token')
-        return tokens
-
-    def _should_export(self, entity_type):
-        if entity_type == EntityType.BLOCK:
-            return True
-
-        if entity_type == EntityType.TRANSACTION:
-            return EntityType.TRANSACTION in self.entity_types or self._should_export(EntityType.LOG)
-
-        if entity_type == EntityType.RECEIPT:
-            return EntityType.TRANSACTION in self.entity_types or self._should_export(EntityType.TOKEN_TRANSFER)
-
-        if entity_type == EntityType.LOG:
-            return EntityType.LOG in self.entity_types or self._should_export(EntityType.TOKEN_TRANSFER)
-
-        if entity_type == EntityType.TOKEN_TRANSFER:
-            return EntityType.TOKEN_TRANSFER in self.entity_types
-
-        if entity_type == EntityType.TRACE:
-            return EntityType.TRACE in self.entity_types or self._should_export(EntityType.CONTRACT)
-
-        if entity_type == EntityType.CONTRACT:
-            return EntityType.CONTRACT in self.entity_types or self._should_export(EntityType.TOKEN)
-
-        if entity_type == EntityType.TOKEN:
-            return EntityType.TOKEN in self.entity_types
-
-        raise ValueError('Unexpected entity type ' + entity_type)
-
-    def calculate_item_ids(self, items):
-        for item in items:
-            item['item_id'] = self.item_id_calculator.calculate(item)
-
-    def close(self):
-        self.item_exporter.close()

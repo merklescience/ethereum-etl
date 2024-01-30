@@ -1,31 +1,8 @@
-# MIT License
-#
-# Copyright (c) 2018 Evgeny Medvedev, evge.medvedev@gmail.com
-#
-# Permission is hereby granted, free of charge, to any person obtaining a copy
-# of this software and associated documentation files (the "Software"), to deal
-# in the Software without restriction, including without limitation the rights
-# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-# copies of the Software, and to permit persons to whom the Software is
-# furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in all
-# copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-# SOFTWARE.
-
-
 import json
 
 from blockchainetl.jobs.base_job import BaseJob
 from ethereumetl.executors.batch_work_executor import BatchWorkExecutor
-from ethereumetl.json_rpc_requests import generate_get_receipt_json_rpc
+from ethereumetl.json_rpc_requests import generate_get_receipt_by_block_json_rpc
 from ethereumetl.mappers.receipt_log_mapper import EthReceiptLogMapper
 from ethereumetl.mappers.receipt_mapper import EthReceiptMapper
 from ethereumetl.utils import rpc_response_batch_to_results
@@ -62,13 +39,14 @@ class ExportReceiptsJob(BaseJob):
     def _export(self):
         self.batch_work_executor.execute(self.transaction_hashes_iterable, self._export_receipts)
 
-    def _export_receipts(self, transaction_hashes):
-        receipts_rpc = list(generate_get_receipt_json_rpc(transaction_hashes))
+    def _export_receipts(self, block_number):
+        receipts_rpc = list(generate_get_receipt_by_block_json_rpc(block_number))
         response = self.batch_web3_provider.make_batch_request(json.dumps(receipts_rpc))
-        results = rpc_response_batch_to_results(response)
-        receipts = [self.receipt_mapper.json_dict_to_receipt(result) for result in results]
-        for receipt in receipts:
-            self._export_receipt(receipt)
+        results_raw = rpc_response_batch_to_results(response)
+        for results in results_raw:
+            receipts = [self.receipt_mapper.json_dict_to_receipt(result) for result in results]
+            for receipt in receipts:
+                self._export_receipt(receipt)
 
     def _export_receipt(self, receipt):
         if self.export_receipts:
