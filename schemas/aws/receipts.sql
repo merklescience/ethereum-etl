@@ -7,11 +7,19 @@ CREATE EXTERNAL TABLE IF NOT EXISTS receipts (
     gas_used BIGINT,
     contract_address STRING,
     root STRING,
-    status BIGINT,
-    effective_gas_price BIGINT
+    status BIGINT
 )
-PARTITIONED BY (block_date STRING)
-ROW FORMAT SERDE 'org.apache.hive.hcatalog.data.JsonSerDe'
-LOCATION 's3://<your_bucket>/export/receipts/';
+PARTITIONED BY (start_block BIGINT, end_block BIGINT)
+ROW FORMAT SERDE 'org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe'
+WITH SERDEPROPERTIES (
+    'serialization.format' = ',',
+    'field.delim' = ',',
+    'escape.delim' = '\\'
+)
+STORED AS TEXTFILE
+LOCATION 's3://<your_bucket>/ethereumetl/export/receipts'
+TBLPROPERTIES (
+  'skip.header.line.count' = '1'
+);
 
 MSCK REPAIR TABLE receipts;

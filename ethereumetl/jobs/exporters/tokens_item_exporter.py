@@ -33,13 +33,12 @@ FIELDS_TO_EXPORT = [
 ]
 
 
-def tokens_item_exporter(tokens_output, converters=()):
+def tokens_item_exporter(tokens_output):
     return CompositeItemExporter(
         filename_mapping={
             'token': tokens_output
         },
         field_mapping={
             'token': FIELDS_TO_EXPORT
-        },
-        converters=converters
+        }
     )

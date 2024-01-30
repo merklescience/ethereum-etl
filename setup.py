@@ -1,6 +1,6 @@
 import os
 
-from setuptools import find_packages, setup
+from setuptools import setup, find_packages
 
 
 def read(fname):
@@ -11,7 +11,7 @@ long_description = read('README.md') if os.path.isfile("README.md") else ""
 
 setup(
     name='ethereum-etl',
-    version='2.0.2',
+    version='1.3.1',
     author='Evgeny Medvedev',
     author_email='evge.medvedev@gmail.com',
     description='Tools for exporting Ethereum blockchain data to CSV or JSON',
@@ -24,35 +24,28 @@ setup(
         'Intended Audience :: Developers',
         'License :: OSI Approved :: MIT License',
         'Programming Language :: Python :: 3',
-        'Programming Language :: Python :: 3.7',
-        'Programming Language :: Python :: 3.8',
+        'Programming Language :: Python :: 3.5',
+        'Programming Language :: Python :: 3.6',
+        'Programming Language :: Python :: 3.7'
         'Programming Language :: Python :: 3.9'
     ],
     keywords='ethereum',
-    python_requires='>=3.7.2,<4',
+    # web3.py doesn't work on 3.5.2 and less (https://github.com/ethereum/web3.py/issues/1012)
+    python_requires='>=3.5.3,<3.10.0',
     install_requires=[
-        'web3>=5.29,<6',
-        'eth-utils==1.10',
-        'eth-abi==2.1.1',
+        'web3==4.7.2',
+        'eth-utils==1.3.0',
+        'eth-abi==1.2.0',
         # TODO: This has to be removed when "ModuleNotFoundError: No module named 'eth_utils.toolz'" is fixed at eth-abi
-        'python-dateutil>=2.8.0,<3',
-        'click==8.0.4',
-        'ethereum-dasm==0.1.4',
-        'base58',
-        'requests'
+        'python-dateutil==2.7.0',
+        'click==8.0',
+        'ethereum-dasm'
     ],
     extras_require={
         'streaming': [
             'timeout-decorator==0.4.1',
+            'google-cloud-pubsub==0.39.1',
             'confluent-kafka==2.2.0'
-            'google-cloud-pubsub==2.1.0',
-            'google-cloud-storage==1.33.0',
-            'kafka-python==2.0.2',
-            'sqlalchemy==1.4',
-            'pg8000==1.16.6',
-            # This library is a dependency for google-cloud-pubsub, starting from 0.3.22 it requires Rust,
-            # that's why  we lock the version here
-            'libcst==0.3.21'
         ],
         'dev': [
             'pytest~=4.3.0'

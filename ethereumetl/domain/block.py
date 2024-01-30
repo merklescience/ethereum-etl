@@ -43,4 +43,3 @@ class EthBlock(object):
 
         self.transactions = []
         self.transaction_count = 0
-        self.base_fee_per_gas = 0

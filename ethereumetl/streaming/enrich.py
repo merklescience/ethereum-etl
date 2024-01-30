@@ -74,9 +74,6 @@ def enrich_transactions(transactions, receipts):
             'block_timestamp',
             'block_number',
             'block_hash',
-            'max_fee_per_gas',
-            'max_priority_fee_per_gas',
-            'transaction_type'
             'token_address'
         ],
         right_fields=[
@@ -84,8 +81,7 @@ def enrich_transactions(transactions, receipts):
             ('gas_used', 'receipt_gas_used'),
             ('contract_address', 'receipt_contract_address'),
             ('root', 'receipt_root'),
-            ('status', 'receipt_status'),
-            ('effective_gas_price', 'receipt_effective_gas_price')
+            ('status', 'receipt_status')
         ]))
 
     if len(result) != len(transactions):
@@ -165,7 +161,6 @@ def enrich_traces(blocks, traces):
             'transaction_hash',
             'block_number',
             'trace_id',
-            'trace_index'
             'token_address'
         ],
         [

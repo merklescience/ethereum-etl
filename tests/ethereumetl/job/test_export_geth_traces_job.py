@@ -22,7 +22,7 @@
 
 import pytest
 
-from ethereumetl.web3_utils import build_web3
+from web3 import Web3
 
 import tests.resources
 from ethereumetl.jobs.export_geth_traces_job import ExportGethTracesJob

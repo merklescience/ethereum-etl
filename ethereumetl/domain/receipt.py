@@ -33,4 +33,3 @@ class EthReceipt(object):
         self.logs = []
         self.root = None
         self.status = None
-        self.effective_gas_price = None

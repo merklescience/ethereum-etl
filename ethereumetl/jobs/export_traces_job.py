@@ -89,14 +89,13 @@ class ExportTracesJob(BaseJob):
         json_traces = self.web3.parity.traceBlock(block_number)
 
         if json_traces is None:
-            raise ValueError('Response from the node is None. Is the node fully synced? Is the node started with tracing enabled? Is trace_block API enabled?')
+            raise ValueError('Response from the node is None. Is the node fully synced?')
 
         traces = [self.trace_mapper.json_dict_to_trace(json_trace) for json_trace in json_traces]
         all_traces.extend(traces)
 
         calculate_trace_statuses(all_traces)
         calculate_trace_ids(all_traces)
-        calculate_trace_indexes(all_traces)
 
         for trace in all_traces:
             self.item_exporter.export_item(self.trace_mapper.trace_to_dict(trace))
@@ -104,9 +103,3 @@ class ExportTracesJob(BaseJob):
     def _end(self):
         self.batch_work_executor.shutdown()
         self.item_exporter.close()
-
-
-def calculate_trace_indexes(traces):
-    # Only works if traces were originally ordered correctly which is the case for Parity traces
-    for ind, trace in enumerate(traces):
-        trace.trace_index = ind

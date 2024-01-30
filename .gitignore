@@ -51,6 +51,3 @@ ENV/
 last_synced_block.txt
 pyrightconfig.json
 pyrightconfig.json
-
-# etl
-/last_synced_block.txt
