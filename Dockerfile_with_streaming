@@ -1,0 +1,26 @@
+FROM python:3.6
+MAINTAINER Evgeny Medvedev <evge.medvedev@gmail.com>
+ENV PROJECT_DIR=ethereum-etl
+
+RUN mkdir /$PROJECT_DIR
+WORKDIR /$PROJECT_DIR
+COPY . .
+RUN pip install --upgrade pip && pip install -e /$PROJECT_DIR/[streaming]
+RUN apt-get update && apt-get install -y apt-transport-https ca-certificates curl gnupg && \
+    curl -sLf --retry 3 --tlsv1.2 --proto "=https" 'https://packages.doppler.com/public/cli/gpg.DE2A7741A397C129.key' | apt-key add - && \
+    echo "deb https://packages.doppler.com/public/cli/deb/debian any-version main" | tee /etc/apt/sources.list.d/doppler-cli.list && \
+    apt-get update && \
+    apt-get -y install doppler
+
+RUN (curl -Ls https://cli.doppler.com/install.sh || wget -qO- https://cli.doppler.com/install.sh) | sh
+
+ARG DOPPLER_TOKEN
+
+ENV DOPPLER_TOKEN ${DOPPLER_TOKEN}
+
+# Add Tini
+ENV TINI_VERSION v0.18.0
+ADD https://github.com/krallin/tini/releases/download/${TINI_VERSION}/tini /tini
+RUN chmod +x /tini
+
+ENTRYPOINT ["doppler", "run", "--", "/tini", "--", "python", "ethereumetl"]
