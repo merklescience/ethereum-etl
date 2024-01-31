@@ -1,6 +1,10 @@
+Uninstall 
+
+`pip3 uninstall ethereumetl`
+
 Run setup.py 
 
-`python setup.py sdist`
+`sudo python setup.py sdist`
 
 Install ethereum-etl
 

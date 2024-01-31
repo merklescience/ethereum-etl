@@ -168,6 +168,16 @@ def export_all_common(partitions, output_dir, provider_uri, max_workers, batch_s
         ))
         extract_csv_column_unique(transactions_file, transaction_hashes_file, 'hash')
 
+        block_numbers_file = '{cache_output_dir}/block_numbers_{file_name_suffix}.csv'.format(
+            cache_output_dir=cache_output_dir,
+            file_name_suffix=file_name_suffix,
+        )
+        logger.info('Extracting hash column from transaction file {transactions_file}'.format(
+            transactions_file=transactions_file,
+        ))
+        extract_csv_column_unique(transactions_file, transaction_hashes_file, 'hash')
+
+
         receipts_output_dir = '{output_dir}/receipts{partition_dir}'.format(
             output_dir=output_dir,
             partition_dir=partition_dir,
@@ -194,9 +204,9 @@ def export_all_common(partitions, output_dir, provider_uri, max_workers, batch_s
             logs_file=logs_file,
         ))
 
-        with smart_open(transaction_hashes_file, 'r') as transaction_hashes:
+        with smart_open(block_numbers_file, 'r') as block_numbers:
             job = ExportReceiptsJob(
-                transaction_hashes_iterable=(transaction_hash.strip() for transaction_hash in transaction_hashes),
+                block_number_iterable=(block_number.strip() for block_number in block_numbers),
                 batch_size=batch_size,
                 batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
                 max_workers=max_workers,
