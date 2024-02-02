@@ -35,6 +35,7 @@ setup(
         'eth-utils==1.10',
         'eth-abi>=2.2.0,<3.0.0',
         'confluent-kafka==2.2.0',
+        'timeout-decorator==0.4.1',
         # TODO: This has to be removed when "ModuleNotFoundError: No module named 'eth_utils.toolz'" is fixed at eth-abi
         'python-dateutil>=2.8.0,<3',
         'click>=8.0.4,<9',
