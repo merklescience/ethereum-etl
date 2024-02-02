@@ -50,6 +50,7 @@ setup(
             'kafka-python==2.0.2',
             'sqlalchemy==1.4',
             'pg8000==1.16.6',
+            'confluent-kafka==2.2.0',
             # This library is a dependency for google-cloud-pubsub, starting from 0.3.22 it requires Rust,
             # that's why  we lock the version here
             'libcst==0.3.21',
