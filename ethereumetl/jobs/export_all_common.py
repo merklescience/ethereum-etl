@@ -196,7 +196,7 @@ def export_all_common(partitions, output_dir, provider_uri, max_workers, batch_s
 
         with smart_open(transaction_hashes_file, 'r') as transaction_hashes:
             job = ExportReceiptsJob(
-                transaction_hashes_iterable=(transaction_hash.strip() for transaction_hash in transaction_hashes),
+                block_number_iterable=(transaction_hash.strip() for transaction_hash in transaction_hashes),
                 batch_size=batch_size,
                 batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
                 max_workers=max_workers,

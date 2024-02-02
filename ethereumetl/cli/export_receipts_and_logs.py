@@ -35,7 +35,8 @@ logging_basic_config()
 
 
 @click.command(context_settings=dict(help_option_names=['-h', '--help']))
-@click.option('-b', '--batch-size', default=100, show_default=True, type=int, help='The number of receipts to export at a time.')
+@click.option('-b', '--batch-size', default=100, show_default=True, type=int,
+              help='The number of receipts to export at a time.')
 @click.option('-t', '--block-hashes', required=True, type=str,
               help='The file containing block hashes, one per line.')
 @click.option('-p', '--provider-uri', default='https://mainnet.infura.io', show_default=True, type=str,
@@ -54,7 +55,7 @@ def export_receipts_and_logs(batch_size, block_number, provider_uri, max_workers
     provider_uri = check_classic_provider_uri(chain, provider_uri)
     with smart_open(block_number, 'r') as blocks_file:
         job = ExportReceiptsJob(
-            transaction_hashes_iterable=(block_number.strip() for block_number in blocks_file),
+            block_number_iterable=(block_number.strip() for block_number in blocks_file),
             batch_size=batch_size,
             batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
             max_workers=max_workers,
