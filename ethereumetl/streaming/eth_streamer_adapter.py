@@ -101,6 +101,7 @@ class EthStreamerAdapter:
         # self.calculate_item_timestamps(all_items)
 
         self.item_exporter.export_items(all_items)
+        # self.close()
 
     def _export_blocks_and_transactions(self, start_block, end_block):
         blocks_and_transactions_item_exporter = InMemoryItemExporter(item_types=['block', 'transaction'])

@@ -27,7 +27,7 @@ from blockchainetl.streaming.streaming_utils import configure_signals, configure
 from ethereumetl.enumeration.entity_type import EntityType
 
 from ethereumetl.providers.auto import get_provider_from_uri
-from ethereumetl.streaming.item_exporter_creator import create_item_exporters
+from ethereumetl.streaming.item_exporter_creator import create_item_exporters, create_item_exporter
 from ethereumetl.thread_local_proxy import ThreadLocalProxy
 
 
@@ -79,7 +79,7 @@ def stream(last_synced_block_file, lag, provider_uri, output, start_block, entit
 
     streamer_adapter = EthStreamerAdapter(
         batch_web3_provider=ThreadLocalProxy(lambda: get_provider_from_uri(provider_uri, batch=True)),
-        item_exporter=create_item_exporters(output, topic_prefix, topic_suffix),
+        item_exporter=create_item_exporter(output, topic_prefix, topic_suffix),
         batch_size=batch_size,
         max_workers=max_workers,
         entity_types=entity_types

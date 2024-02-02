@@ -30,7 +30,9 @@ import json
 
 
 class KafkaItemExporter:
-    def __init__(self, item_type_to_topic_mapping) -> None:
+    def __init__(
+            self, item_type_to_topic_mapping
+    ) -> None:
         logging.basicConfig(
             level=logging.INFO,
             filename="message-publish.log",
@@ -38,13 +40,18 @@ class KafkaItemExporter:
         )
 
         conf = {
-            "bootstrap.servers": os.getenv("KAFKA_BROKER"),
+            "bootstrap.servers": os.getenv("CONFLUENT_BROKER"),
             "security.protocol": "SASL_SSL",
             "sasl.mechanisms": "PLAIN",
             "client.id": socket.gethostname(),
             "message.max.bytes": 5242880,
             "sasl.username": os.getenv("KAFKA_PRODUCER_KEY"),
-            "sasl.password": os.getenv("KAFKA_PRODUCER_PASSWORD")
+            "sasl.password": os.getenv("KAFKA_PRODUCER_PASSWORD"),
+            "linger.ms": 10,
+            "batch.size": 5000,
+            "acks": 1,
+            "batch.num.messages": 10000,
+            "delivery.report.only.error": True
         }
 
         producer = Producer(conf)
@@ -59,7 +66,7 @@ class KafkaItemExporter:
         try:
             self._export_items_with_timeout(items)
         except timeout_decorator.TimeoutError as e:
-            logging.info("Timeout error with kafka producer")
+            logging.info("Timeout error with kafka")
             raise e
 
     @timeout_decorator.timeout(300)
@@ -69,21 +76,31 @@ class KafkaItemExporter:
 
     def export_item(self, item):
         item_type = item.get("type")
+        # logging.info("publishing " + item_type)
         has_item_type = item_type is not None
         if has_item_type and item_type in self.item_type_to_topic_mapping:
-            data = json.dumps(item)  # .encode("utf-8")
+            data = json.dumps(item).encode("utf-8")
             topic = self.item_type_to_topic_mapping[item_type]
-            self.publish_data(key=item.get("token_address"), value=data, topic=topic)  # data.decode("utf-8"),
+            self.write_txns(key=item.get("token_address"),
+                            value=data.decode("utf-8"),
+                            topic=topic)
         else:
             logging.error('Topic for item type "{item_type}" is not configured.')
 
     def close(self):
         self.producer.flush()
 
-    def publish_data(self, key: str, value: str, topic: str):
+    def write_txns(self, key: str, value: str, topic: str):
+        def acked(err, msg):
+            if err is not None:
+                self.logging.error('%% Message failed delivery: %s\n' % err)
+
         try:
-            self.producer.produce(topic, key=key, value=value)
+            self.producer.produce(topic, key=key, value=value, on_delivery=acked)
+            self.producer.poll(0)
         except BufferError:
             self.logging.error('%% Local producer queue is full (%d messages awaiting delivery): try again\n' %
                                len(self.producer))
-        self.producer.poll(0)
+            self.logging.error('%% Flushing producer and retrying')
+            self.producer.flush()
+            self.producer.produce(topic, key=key, value=value, on_delivery=acked)
