@@ -34,6 +34,7 @@ setup(
         'web3>=5.29,<6',
         'eth-utils==1.10',
         'eth-abi>=2.2.0,<3.0.0',
+        'confluent-kafka==2.2.0',
         # TODO: This has to be removed when "ModuleNotFoundError: No module named 'eth_utils.toolz'" is fixed at eth-abi
         'python-dateutil>=2.8.0,<3',
         'click>=8.0.4,<9',
@@ -50,7 +51,6 @@ setup(
             'kafka-python==2.0.2',
             'sqlalchemy==1.4',
             'pg8000==1.16.6',
-            'confluent-kafka==2.2.0',
             # This library is a dependency for google-cloud-pubsub, starting from 0.3.22 it requires Rust,
             # that's why  we lock the version here
             'libcst==0.3.21',
