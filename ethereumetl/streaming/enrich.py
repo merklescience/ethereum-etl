@@ -69,7 +69,7 @@ def enrich_transactions(transactions, receipts):
             'to_address',
             'value',
             # 'gas',
-            # 'gas_price',
+            'gas_price',
             # 'input',
             'block_timestamp',
             'block_number',
