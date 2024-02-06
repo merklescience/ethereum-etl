@@ -97,10 +97,11 @@ class EthStreamerAdapter:
             sort_by(enriched_contracts, ('block_number',)) + \
             sort_by(enriched_tokens, ('block_number',))
 
-        self.calculate_item_ids(all_items)
-        self.calculate_item_timestamps(all_items)
+        # self.calculate_item_ids(all_items)
+        # self.calculate_item_timestamps(all_items)
 
         self.item_exporter.export_items(all_items)
+        # self.close()
 
     def _export_blocks_and_transactions(self, start_block, end_block):
         blocks_and_transactions_item_exporter = InMemoryItemExporter(item_types=['block', 'transaction'])
@@ -122,7 +123,7 @@ class EthStreamerAdapter:
     def _export_receipts_and_logs(self, blocks):
         exporter = InMemoryItemExporter(item_types=['receipt', 'log'])
         job = ExportReceiptsJob(
-            transaction_hashes_iterable=(blocks['number'] for blocks in blocks),
+            block_number_iterable=(blocks['number'] for blocks in blocks),
             batch_size=self.batch_size,
             batch_web3_provider=self.batch_web3_provider,
             max_workers=self.max_workers,

@@ -62,5 +62,6 @@ class EthTransactionMapper(object):
             'input': transaction.input,
             'max_fee_per_gas': transaction.max_fee_per_gas,
             'max_priority_fee_per_gas': transaction.max_priority_fee_per_gas,
-            'transaction_type': transaction.transaction_type
+            'transaction_type': transaction.transaction_type,
+            'token_address': '0x0000',
         }

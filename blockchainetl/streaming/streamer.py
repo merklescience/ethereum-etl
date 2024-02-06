@@ -96,6 +96,7 @@ class Streamer:
 
         if blocks_to_sync != 0:
             self.blockchain_streamer_adapter.export_all(self.last_synced_block + 1, target_block)
+            time.sleep(1) #TODO: Remove later
             logging.info('Writing last synced block {}'.format(target_block))
             write_last_synced_block(self.last_synced_block_file, target_block)
             self.last_synced_block = target_block

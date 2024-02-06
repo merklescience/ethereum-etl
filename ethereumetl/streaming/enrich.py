@@ -63,32 +63,33 @@ def enrich_transactions(transactions, receipts):
         left_fields=[
             'type',
             'hash',
-            'nonce',
+            # 'nonce',
             'transaction_index',
             'from_address',
             'to_address',
             'value',
-            'gas',
+            # 'gas',
             'gas_price',
-            'input',
+            # 'input',
             'block_timestamp',
             'block_number',
-            'block_hash',
-            'max_fee_per_gas',
-            'max_priority_fee_per_gas',
-            'transaction_type'
+            # 'block_hash',
+            # 'max_fee_per_gas',
+            # 'max_priority_fee_per_gas',
+            # 'transaction_type',
+            'token_address'
         ],
         right_fields=[
-            ('cumulative_gas_used', 'receipt_cumulative_gas_used'),
+            # ('cumulative_gas_used', 'receipt_cumulative_gas_used'),
             ('gas_used', 'receipt_gas_used'),
-            ('contract_address', 'receipt_contract_address'),
-            ('root', 'receipt_root'),
+            # ('contract_address', 'receipt_contract_address'),
+            # ('root', 'receipt_root'),
             ('status', 'receipt_status'),
-            ('effective_gas_price', 'receipt_effective_gas_price'),
-            ('l1_fee', 'receipt_l1_fee'),
-            ('l1_gas_used', 'receipt_l1_gas_used'),
-            ('l1_gas_price', 'receipt_l1_gas_price'),
-            ('l1_fee_scalar', 'receipt_l1_fee_scalar')
+            # ('effective_gas_price', 'receipt_effective_gas_price'),
+            # ('l1_fee', 'receipt_l1_fee'),
+            # ('l1_gas_used', 'receipt_l1_gas_used'),
+            # ('l1_gas_price', 'receipt_l1_gas_price'),
+            # ('l1_fee_scalar', 'receipt_l1_fee_scalar')
 
         ]))
 
@@ -132,12 +133,12 @@ def enrich_token_transfers(blocks, token_transfers):
             'to_address',
             'value',
             'transaction_hash',
-            'log_index',
+            # 'log_index',
             'block_number'
         ],
         [
             ('timestamp', 'block_timestamp'),
-            ('hash', 'block_hash'),
+            # ('hash', 'block_hash'),
         ]))
 
     if len(result) != len(token_transfers):
@@ -155,25 +156,26 @@ def enrich_traces(blocks, traces):
             'from_address',
             'to_address',
             'value',
-            'input',
-            'output',
+            # 'input',
+            # 'output',
             'trace_type',
             'call_type',
-            'reward_type',
-            'gas',
-            'gas_used',
-            'subtraces',
+            # 'reward_type',
+            # 'gas',
+            # 'gas_used',
+            # 'subtraces',
             'trace_address',
-            'error',
+            # 'error',
             'status',
             'transaction_hash',
             'block_number',
-            'trace_id',
-            'trace_index'
+            # 'trace_id',
+            # 'trace_index',
+            'token_address'
         ],
         [
             ('timestamp', 'block_timestamp'),
-            ('hash', 'block_hash'),
+            # ('hash', 'block_hash'),
         ]))
 
     if len(result) != len(traces):

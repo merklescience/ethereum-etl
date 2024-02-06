@@ -55,7 +55,7 @@ def test_export_receipts_job(tmpdir, batch_size, transaction_hashes, output_form
     logs_output_file = str(tmpdir.join('actual_logs.' + output_format))
 
     job = ExportReceiptsJob(
-        transaction_hashes_iterable=transaction_hashes,
+        block_number_iterable=transaction_hashes,
         batch_size=batch_size,
         batch_web3_provider=ThreadLocalProxy(
             lambda: get_web3_provider(web3_provider_type, lambda file: read_resource(resource_group, file), batch=True)
