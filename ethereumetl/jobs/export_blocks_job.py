@@ -85,10 +85,10 @@ class ExportBlocksJob(BaseJob):
     def _export_block(self, block):
         if self.chain == 'polygon':
             bor_author_rpc = generate_get_bor_author_by_number_json_rpc(block.number)
-            bor_response = self.batch_web3_provider.make_batch_request(json.dumps(bor_author_rpc))
-            bor_result = rpc_response_batch_to_results(bor_response)
+            bor_response = self.batch_web3_provider.make_batch_request(json.dumps(next(bor_author_rpc)))
+            bor_result = rpc_response_batch_to_results([bor_response])
             if self.export_blocks:
-                self.item_exporter.export_item(self.block_mapper.block_to_dict_with_author(block, bor_result))
+                self.item_exporter.export_item(self.block_mapper.block_to_dict_with_author(block, next(bor_result)))
         else:
             if self.export_blocks:
                 self.item_exporter.export_item(self.block_mapper.block_to_dict(block))

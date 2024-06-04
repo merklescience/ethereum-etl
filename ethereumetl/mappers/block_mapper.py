@@ -129,6 +129,5 @@ class EthBlockMapper(object):
             'transaction_count': block.transaction_count,
             'base_fee_per_gas': block.base_fee_per_gas,
             'withdrawals_root': block.withdrawals_root,
-            'withdrawals': block.withdrawals,
-            'validated_by': bor_result
+            'withdrawals': block.withdrawals
         }
