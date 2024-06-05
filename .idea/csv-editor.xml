@@ -10,6 +10,34 @@
             </Attribute>
           </value>
         </entry>
+        <entry key="/tests/resources/test_export_blocks_job/block_with_logs/expected_blocks.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/tests/resources/test_export_blocks_job/block_without_transactions/expected_blocks.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/tests/resources/test_export_blocks_job/blocks_with_transactions/expected_blocks.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
+        <entry key="/tests/resources/test_export_blocks_job/blocks_with_transactions_and_withdrawals/expected_blocks.csv">
+          <value>
+            <Attribute>
+              <option name="separator" value="," />
+            </Attribute>
+          </value>
+        </entry>
       </map>
     </option>
   </component>
