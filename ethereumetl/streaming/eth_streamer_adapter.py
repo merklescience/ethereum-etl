@@ -24,6 +24,7 @@ class EthStreamerAdapter:
             item_exporter=ConsoleItemExporter(),
             batch_size=100,
             max_workers=5,
+            chain="ethereum",
             entity_types=tuple(EntityType.ALL_FOR_STREAMING)):
         self.batch_web3_provider = batch_web3_provider
         self.item_exporter = item_exporter
@@ -32,6 +33,7 @@ class EthStreamerAdapter:
         self.entity_types = entity_types
         self.item_id_calculator = EthItemIdCalculator()
         self.item_timestamp_calculator = EthItemTimestampCalculator()
+        self.chain=chain
 
     def open(self):
         self.item_exporter.open()
@@ -44,7 +46,7 @@ class EthStreamerAdapter:
         # Export blocks and transactions
         blocks, transactions = [], []
         if self._should_export(EntityType.BLOCK) or self._should_export(EntityType.TRANSACTION):
-            blocks, transactions = self._export_blocks_and_transactions(start_block, end_block)
+            blocks, transactions = self._export_blocks_and_transactions(start_block, end_block,self.chain)
 
         # Export receipts and logs
         receipts, logs = [], []
@@ -102,7 +104,7 @@ class EthStreamerAdapter:
 
         self.item_exporter.export_items(all_items)
 
-    def _export_blocks_and_transactions(self, start_block, end_block):
+    def _export_blocks_and_transactions(self, start_block, end_block, chain):
         blocks_and_transactions_item_exporter = InMemoryItemExporter(item_types=['block', 'transaction'])
         blocks_and_transactions_job = ExportBlocksJob(
             start_block=start_block,
@@ -112,7 +114,8 @@ class EthStreamerAdapter:
             max_workers=self.max_workers,
             item_exporter=blocks_and_transactions_item_exporter,
             export_blocks=self._should_export(EntityType.BLOCK),
-            export_transactions=self._should_export(EntityType.TRANSACTION)
+            export_transactions=self._should_export(EntityType.TRANSACTION),
+            chain=chain
         )
         blocks_and_transactions_job.run()
         blocks = blocks_and_transactions_item_exporter.get_items('block')

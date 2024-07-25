@@ -29,6 +29,11 @@ def generate_get_block_by_number_json_rpc(block_numbers, include_transactions):
             request_id=idx
         )
 
+def generate_get_bor_author_by_number_json_rpc(block_number):
+    yield generate_json_rpc(
+        method='bor_getAuthor',
+        params=[hex(block_number)],
+    )
 
 def generate_trace_block_by_number_json_rpc(block_numbers):
     for block_number in block_numbers:
