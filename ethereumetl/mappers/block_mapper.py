@@ -53,6 +53,7 @@ class EthBlockMapper(object):
         block.gas_used = hex_to_dec(json_dict.get('gasUsed'))
         block.timestamp = hex_to_dec(json_dict.get('timestamp'))
         block.base_fee_per_gas = hex_to_dec(json_dict.get('baseFeePerGas'))
+        block.withdrawals_root = json_dict.get('withdrawalsRoot')
 
         if 'transactions' in json_dict:
             block.transactions = [
@@ -63,7 +64,21 @@ class EthBlockMapper(object):
 
             block.transaction_count = len(json_dict['transactions'])
 
+        if 'withdrawals' in json_dict:
+            block.withdrawals = self.parse_withdrawals(json_dict['withdrawals'])
+
         return block
+
+    def parse_withdrawals(self, withdrawals):
+        return [
+            {
+                "index": hex_to_dec(withdrawal["index"]),
+                "validator_index": hex_to_dec(withdrawal["validatorIndex"]),
+                "address": withdrawal["address"],
+                "amount": hex_to_dec(withdrawal["amount"]),
+            }
+            for withdrawal in withdrawals
+        ]
 
     def block_to_dict(self, block):
         return {
@@ -86,5 +101,33 @@ class EthBlockMapper(object):
             'gas_used': block.gas_used,
             'timestamp': block.timestamp,
             'transaction_count': block.transaction_count,
-            'base_fee_per_gas': block.base_fee_per_gas
+            'base_fee_per_gas': block.base_fee_per_gas,
+            'withdrawals_root': block.withdrawals_root,
+            'withdrawals': block.withdrawals,
+        }
+
+    def block_to_dict_with_author(self, block, bor_result):
+        return {
+            'type': 'block',
+            'number': block.number,
+            'hash': block.hash,
+            'parent_hash': block.parent_hash,
+            'nonce': block.nonce,
+            'sha3_uncles': block.sha3_uncles,
+            'logs_bloom': block.logs_bloom,
+            'transactions_root': block.transactions_root,
+            'state_root': block.state_root,
+            'receipts_root': block.receipts_root,
+            'miner': bor_result,
+            'difficulty': block.difficulty,
+            'total_difficulty': block.total_difficulty,
+            'size': block.size,
+            'extra_data': block.extra_data,
+            'gas_limit': block.gas_limit,
+            'gas_used': block.gas_used,
+            'timestamp': block.timestamp,
+            'transaction_count': block.transaction_count,
+            'base_fee_per_gas': block.base_fee_per_gas,
+            'withdrawals_root': block.withdrawals_root,
+            'withdrawals': block.withdrawals
         }

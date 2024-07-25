@@ -2,8 +2,8 @@
 
 [![Build Status](https://app.travis-ci.com/blockchain-etl/ethereum-etl.svg?branch=develop)](https://travis-ci.com/github/blockchain-etl/ethereum-etl)
 [![Join the chat at https://gitter.im/ethereum-eth](https://badges.gitter.im/ethereum-etl.svg)](https://gitter.im/ethereum-etl/Lobby?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
-[![Telegram](https://img.shields.io/badge/telegram-join%20chat-blue.svg)](https://t.me/joinchat/GsMpbA3mv1OJ6YMp3T5ORQ)
-[![Discord](https://img.shields.io/badge/discord-join%20chat-blue.svg)](https://discord.gg/wukrezR)
+[![Telegram](https://img.shields.io/badge/telegram-join%20chat-blue.svg)](https://t.me/BlockchainETL)
+[![Discord](https://img.shields.io/badge/discord-join%20chat-blue.svg)](https://discord.gg/tRKG7zGKtF)
 
 Ethereum ETL lets you convert blockchain data into convenient formats like CSVs and relational databases.
 
@@ -120,4 +120,4 @@ docker run --platform linux/x86_64 ethereum-etl:latest stream --start-block 5000
 
 ## Projects using Ethereum ETL
 * [Google](https://goo.gl/oY5BCQ) - Public BigQuery Ethereum datasets
-* [Nansen](https://www.nansen.ai/?ref=ethereumetl) - Analytics platform for Ethereum
+* [Nansen](https://nansen.ai/query?ref=ethereumetl) - Analytics platform for Ethereum

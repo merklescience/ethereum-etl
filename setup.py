@@ -11,7 +11,7 @@ long_description = read('README.md') if os.path.isfile("README.md") else ""
 
 setup(
     name='ethereum-etl',
-    version='2.0.2',
+    version='2.3.4',
     author='Evgeny Medvedev',
     author_email='evge.medvedev@gmail.com',
     description='Tools for exporting Ethereum blockchain data to CSV or JSON',
@@ -33,25 +33,32 @@ setup(
     install_requires=[
         'web3>=5.29,<6',
         'eth-utils==1.10',
-        'eth-abi==2.1.1',
+        'eth-abi>=2.2.0,<3.0.0',
         # TODO: This has to be removed when "ModuleNotFoundError: No module named 'eth_utils.toolz'" is fixed at eth-abi
         'python-dateutil>=2.8.0,<3',
-        'click==8.0.4',
+        'click>=8.0.4,<9',
         'ethereum-dasm==0.1.4',
+        'urllib3<2',
         'base58',
         'requests'
     ],
     extras_require={
         'streaming': [
             'timeout-decorator==0.4.1',
-            'google-cloud-pubsub==2.1.0',
+            'google-cloud-pubsub==2.13.0',
             'google-cloud-storage==1.33.0',
             'kafka-python==2.0.2',
             'sqlalchemy==1.4',
             'pg8000==1.16.6',
             # This library is a dependency for google-cloud-pubsub, starting from 0.3.22 it requires Rust,
             # that's why  we lock the version here
-            'libcst==0.3.21'
+            'libcst==0.3.21',
+            # Later versions break the build in Travis CI for Python 3.7.2
+            'grpcio==1.46.3'
+        ],
+        'streaming-kinesis': [
+            'boto3==1.24.11',
+            'botocore==1.27.11',
         ],
         'dev': [
             'pytest~=4.3.0'

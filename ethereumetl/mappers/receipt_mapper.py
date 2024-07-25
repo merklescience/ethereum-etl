@@ -23,7 +23,7 @@
 
 from ethereumetl.domain.receipt import EthReceipt
 from ethereumetl.mappers.receipt_log_mapper import EthReceiptLogMapper
-from ethereumetl.utils import hex_to_dec, to_normalized_address
+from ethereumetl.utils import hex_to_dec, to_normalized_address, to_float_or_none
 
 
 class EthReceiptMapper(object):
@@ -34,6 +34,7 @@ class EthReceiptMapper(object):
             self.receipt_log_mapper = receipt_log_mapper
 
     def json_dict_to_receipt(self, json_dict):
+
         receipt = EthReceipt()
 
         receipt.transaction_hash = json_dict.get('transactionHash')
@@ -49,6 +50,12 @@ class EthReceiptMapper(object):
         receipt.status = hex_to_dec(json_dict.get('status'))
 
         receipt.effective_gas_price = hex_to_dec(json_dict.get('effectiveGasPrice'))
+
+        receipt.l1_fee = hex_to_dec(json_dict.get('l1Fee'))
+        receipt.l1_gas_used = hex_to_dec(json_dict.get('l1GasUsed'))
+        receipt.l1_gas_price = hex_to_dec(json_dict.get('l1GasPrice'))
+        receipt.l1_fee_scalar = to_float_or_none(json_dict.get('l1FeeScalar'))
+        
 
         if 'logs' in json_dict:
             receipt.logs = [
@@ -69,5 +76,10 @@ class EthReceiptMapper(object):
             'contract_address': receipt.contract_address,
             'root': receipt.root,
             'status': receipt.status,
-            'effective_gas_price': receipt.effective_gas_price
+            'effective_gas_price': receipt.effective_gas_price,
+            'l1_fee': receipt.l1_fee,
+            'l1_gas_used': receipt.l1_gas_used,
+            'l1_gas_price': receipt.l1_gas_price,
+            'l1_fee_scalar': receipt.l1_fee_scalar
+            
         }
