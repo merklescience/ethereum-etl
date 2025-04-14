@@ -28,10 +28,12 @@ import time
 from blockchainetl.streaming.streamer_adapter_stub import StreamerAdapterStub
 from blockchainetl.file_utils import smart_open
 
+from postgrsql_utils import execute_select_query as dbops
 
 class Streamer:
     def __init__(
             self,
+            checkpoint_mode,
             blockchain_streamer_adapter=StreamerAdapterStub(),
             last_synced_block_file='last_synced_block.txt',
             lag=0,
@@ -50,11 +52,14 @@ class Streamer:
         self.block_batch_size = block_batch_size
         self.retry_errors = retry_errors
         self.pid_file = pid_file
+        self.checkpoint_mode = checkpoint_mode
 
         if self.start_block is not None or not os.path.isfile(self.last_synced_block_file):
             init_last_synced_block_file((self.start_block or 0) - 1, self.last_synced_block_file)
 
         self.last_synced_block = read_last_synced_block(self.last_synced_block_file)
+
+        if self.checkpoint_mode == "db":
 
     def stream(self):
         try:
@@ -116,6 +121,15 @@ def delete_file(file):
         pass
 
 
+def write_last_synced_block(last_synced_block):
+    dbops.db_write_last_synced_block(last_synced_block)
+
+
+def read_last_synced_block(file):
+    last_sync_block=dbops.db_read_last_synced_block()
+    return int(last_sync_block)
+
+
 def write_last_synced_block(file, last_synced_block):
     write_to_file(file, str(last_synced_block) + '\n')
 
@@ -137,3 +151,4 @@ def read_last_synced_block(file):
 def write_to_file(file, content):
     with smart_open(file, 'w') as file_handle:
         file_handle.write(content)
+

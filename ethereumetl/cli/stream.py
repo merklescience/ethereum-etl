@@ -54,6 +54,11 @@ from ethereumetl.thread_local_proxy import ThreadLocalProxy
 @click.option('--log-file', default=None, show_default=True, type=str, help='Log file')
 @click.option('--pid-file', default=None, show_default=True, type=str, help='pid file')
 @click.option('--chain', default=None, show_default=True, type=str, help='chain')
+@click.option('--checkpoint_type', default="file",show_default=True, type=str, help='checkpoint_type')
+
+# Checkpoint 
+# default file else "db"
+
 def stream(last_synced_block_file, lag, provider_uri, output, start_block, entity_types,chain,
            period_seconds=10, batch_size=2, block_batch_size=10, max_workers=5, log_file=None, pid_file=None):
     """Streams all data types to console or Google Pub/Sub."""
