@@ -82,8 +82,7 @@ class KafkaItemExporter:
         if has_item_type and item_type in self.item_type_to_topic_mapping:
             data = json.dumps(item).encode("utf-8")
             topic = self.item_type_to_topic_mapping[item_type]
-            self.write_txns(key=item.get("token_address"),
-                            value=data.decode("utf-8"),
+            self.write_txns(value=data.decode("utf-8"),
                             topic=topic)
         else:
             logging.error('Topic for item type "{item_type}" is not configured.')
@@ -91,17 +90,17 @@ class KafkaItemExporter:
     def close(self):
         self.producer.flush()
 
-    def write_txns(self, key: str, value: str, topic: str):
+    def write_txns(self, value: str, topic: str):
         def acked(err, msg):
             if err is not None:
-                self.logging.error('%% Message failed delivery: %s\n' % err)
+                self.logging.error(f'Message failed delivery: {err}')
 
         try:
-            self.producer.produce(topic, key=key, value=value, on_delivery=acked)
+            self.producer.produce(topic, value=value, on_delivery=acked)
             self.producer.poll(0)
         except BufferError:
-            self.logging.error('%% Local producer queue is full (%d messages awaiting delivery): try again\n' %
-                               len(self.producer))
-            self.logging.error('%% Flushing producer and retrying')
+            self.logging.error(f'Local producer queue is full ({len(self.producer)} '
+                               f'messages awaiting delivery): try again ')
+            self.logging.error('Flushing producer and retrying')
             self.producer.flush()
-            self.producer.produce(topic, key=key, value=value, on_delivery=acked)
+            self.producer.produce(topic, value=value, on_delivery=acked)
