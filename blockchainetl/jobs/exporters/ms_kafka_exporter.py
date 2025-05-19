@@ -48,11 +48,11 @@ class KafkaItemExporter:
             "sasl.username": os.getenv("KAFKA_PRODUCER_KEY"),
             "sasl.password": os.getenv("KAFKA_PRODUCER_PASSWORD"),
             "linger.ms": 10,
-            "batch.size": 100,
+            "batch.size": 5000,
             "acks": 1,
-            "batch.num.messages": 100,
+            "batch.num.messages": 1000,
             "delivery.report.only.error": True,
-            "compression.type": "lz4"
+            "compression.type": "gzip"
         }
 
         producer = Producer(conf)
