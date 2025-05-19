@@ -52,7 +52,7 @@ class KafkaItemExporter:
             "acks": 1,
             "batch.num.messages": 1000,
             "delivery.report.only.error": True,
-            "compression.type": "gzip"
+            "compression.type": "lz4"
         }
 
         producer = Producer(conf)
