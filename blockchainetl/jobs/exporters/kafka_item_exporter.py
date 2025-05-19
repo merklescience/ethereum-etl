@@ -47,7 +47,7 @@ class KafkaItemExporter:
             "message.max.bytes": 5242880,
             "sasl.username": os.getenv("KAFKA_PRODUCER_KEY"),
             "sasl.password": os.getenv("KAFKA_PRODUCER_PASSWORD"),
-            "compression.type" : "gzip"
+            "compression.type": "gzip"
         }
 
         producer = Producer(conf)
@@ -78,10 +78,10 @@ class KafkaItemExporter:
         if has_item_type and item_type in self.item_type_to_topic_mapping:
             data = json.dumps(item).encode("utf-8")
             topic = self.item_type_to_topic_mapping[item_type]
-            message_future = self.write_txns(key=item.get("token_address"),
-                                             value=data.decode("utf-8"),
-                                             topic=topic)
-            return message_future
+            self.write_txns(key=None,
+                            value=data.decode("utf-8"),
+                            topic=topic)
+
         else:
             logging.error('Topic for item type "{item_type}" is not configured.')
 
@@ -98,7 +98,7 @@ class KafkaItemExporter:
         self.producer.flush()
         pass
 
-    def write_txns(self, key: str, value: str, topic: str):
+    def write_txns(self, value: str, topic: str, key: str = None):
         def acked(err, msg):
             if err is not None:
                 self.logging.error('%% Message failed delivery: %s\n' % err)

@@ -49,6 +49,8 @@ venv/
 ENV/
 
 last_synced_block.txt
+last_synced_block_hot.txt
+last_synced_block_warm.txt
 pyrightconfig.json
 pyrightconfig.json
 last_synced_block_hot.txt
