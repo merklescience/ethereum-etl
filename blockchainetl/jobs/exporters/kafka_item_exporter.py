@@ -50,7 +50,7 @@ class KafkaItemExporter:
             "linger.ms": 10,
             "batch.size": 50000,
             "acks": 1,
-            "batch.num.messages": 1000,
+            "batch.num.messages": 5000,
             "delivery.report.only.error": True,
             "compression.type": "gzip"
         }
